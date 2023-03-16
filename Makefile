@@ -42,4 +42,4 @@ build-web:
 .PHONY: deploy-web
 deploy-web:
 	make build-web
-	firebase deploy --only hosting --project=dev
+	firebase deploy --only hosting
