@@ -1,9 +1,12 @@
 // ignore_for_file: avoid_print
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutterfire_sample_app_check/firebase_options.dart';
 
 Future<void> main() async {
@@ -12,6 +15,18 @@ Future<void> main() async {
   // Firebase の初期化
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // 環境変数の読み込み
+  await dotenv.load();
+
+  // App Check の初期化
+  await FirebaseAppCheck.instance.activate(
+    // Webに適用する場合は、reCAPTCHAのサイトキーを指定する
+    webRecaptchaSiteKey: dotenv.get('WEB_RECAPCHA_SITE_KEY'),
+    // Androidに適用する場合
+    androidProvider:
+        kReleaseMode ? AndroidProvider.playIntegrity : AndroidProvider.debug,
   );
 
   // FirebaseUser を取得する

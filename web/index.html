@@ -41,6 +41,9 @@
 </head>
 <body>
   <script>
+    if (document.domain == 'localhost') {
+      self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+    }
     window.addEventListener('load', function(ev) {
       // Download main.dart.js
       _flutter.loader.loadEntrypoint({
