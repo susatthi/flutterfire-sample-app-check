@@ -18,7 +18,7 @@ Future<void> main() async {
   );
 
   // 環境変数の読み込み
-  await dotenv.load();
+  await dotenv.load(fileName: 'assets/.env');
 
   // App Check の初期化
   await FirebaseAppCheck.instance.activate(
