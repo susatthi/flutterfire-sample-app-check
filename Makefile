@@ -43,3 +43,18 @@ build-web:
 deploy-web:
 	make build-web
 	firebase deploy --only hosting
+
+### Android Relase Commands
+
+.PHONY: build-android
+build-android:
+	$(FLUTTER) build appbundle \
+		--release
+
+### iOS Relase Commands
+
+.PHONY: build-ios
+build-ios:
+	$(FLUTTER) build ipa \
+		--export-options-plist=ios/ExportOptions_dev.plist \
+		--release
