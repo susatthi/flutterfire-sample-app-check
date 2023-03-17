@@ -48,7 +48,7 @@ deploy-web:
 
 .PHONY: build-android
 build-android:
-	$(FLUTTER) build appbundle \
+	$(FLUTTER) build apk \
 		--release
 
 ### iOS Relase Commands

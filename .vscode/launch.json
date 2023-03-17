@@ -17,10 +17,18 @@
       ]
     },
     {
-      "name": "mobile",
+      "name": "mobile-debug",
       "type": "dart",
       "request": "launch",
       "flutterMode": "debug",
+      "program": "lib/main.dart",
+      "args": []
+    },
+    {
+      "name": "mobile-release",
+      "type": "dart",
+      "request": "launch",
+      "flutterMode": "release",
       "program": "lib/main.dart",
       "args": []
     }

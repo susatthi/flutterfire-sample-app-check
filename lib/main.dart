@@ -12,6 +12,8 @@ import 'package:flutterfire_sample_app_check/firebase_options.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  print('kReleaseMode = $kReleaseMode');
+
   // Firebase の初期化
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -134,7 +136,26 @@ class MyHomePage extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: () async {
+          try {
+            await _incrementCounter();
+          } catch (e) {
+            print(e);
+            await showDialog<void>(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('エラー'),
+                content: Text(e.toString()),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('OK'),
+                  ),
+                ],
+              ),
+            );
+          }
+        },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
