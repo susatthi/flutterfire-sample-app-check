@@ -29,6 +29,9 @@ Future<void> main() async {
     // Androidに適用する場合
     androidProvider:
         kReleaseMode ? AndroidProvider.playIntegrity : AndroidProvider.debug,
+    // iOSに適用する場合
+    appleProvider:
+        kReleaseMode ? AppleProvider.deviceCheck : AppleProvider.debug,
   );
 
   // FirebaseUser を取得する
