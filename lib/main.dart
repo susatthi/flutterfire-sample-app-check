@@ -41,8 +41,10 @@ Future<void> main() async {
     // 未サインインなら匿名ユーザーでサインインする
     final credential = await FirebaseAuth.instance.signInAnonymously();
     uid = credential.user!.uid;
+    print('ログインしました: uid = $uid');
+  } else {
+    print('ログイン済みです: uid = $uid');
   }
-  print('uid = $uid');
 
   runApp(MyApp(uid: uid));
 }
@@ -58,7 +60,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'App Check Sample',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -76,13 +79,13 @@ class MyHomePage extends StatelessWidget {
   final String uid;
 
   /// Firestoreに保存したカウント値のStream
-  Stream<int> get counterStream => FirebaseFirestore.instance
+  Stream<int?> get counterStream => FirebaseFirestore.instance
           .collection('user')
           .doc(uid)
           .snapshots()
           .map((snapshot) {
         final json = snapshot.data();
-        return json?['counter'] ?? 0;
+        return json?['counter'];
       });
 
   /// カウント値を加算する
@@ -119,24 +122,38 @@ class MyHomePage extends StatelessWidget {
           )
         ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('モード: ${kReleaseMode ? 'リリース' : 'デバッグ'}'),
+                Text('UID: $uid'),
+              ],
             ),
-            StreamBuilder<int>(
-                stream: counterStream,
-                builder: (context, snapshot) {
-                  final counter = snapshot.data ?? 0;
-                  return Text(
-                    '$counter',
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  );
-                }),
-          ],
-        ),
+          ),
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                const Text(
+                  'You have pushed the button this many times:',
+                ),
+                StreamBuilder<int?>(
+                    stream: counterStream,
+                    builder: (context, snapshot) {
+                      final counter = snapshot.data;
+                      return Text(
+                        '${counter ?? '-'}',
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      );
+                    }),
+              ],
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
