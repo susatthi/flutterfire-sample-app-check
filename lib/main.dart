@@ -25,7 +25,8 @@ Future<void> main() async {
   // App Check の初期化
   await FirebaseAppCheck.instance.activate(
     // Webに適用する場合は、reCAPTCHAのサイトキーを指定する
-    webRecaptchaSiteKey: dotenv.get('WEB_RECAPCHA_SITE_KEY'),
+    webRecaptchaSiteKey:
+        kReleaseMode ? dotenv.get('WEB_RECAPCHA_SITE_KEY') : null,
     // Androidに適用する場合
     androidProvider:
         kReleaseMode ? AndroidProvider.playIntegrity : AndroidProvider.debug,
@@ -104,19 +105,20 @@ class MyHomePage extends StatelessWidget {
           IconButton(
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
-              // ignore: use_build_context_synchronously
-              await showDialog<void>(
-                context: context,
-                builder: (context) => AlertDialog(
-                  content: const Text('アプリを再起動してください。'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('OK'),
-                    ),
-                  ],
-                ),
-              );
+              if (context.mounted) {
+                await showDialog<void>(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    content: const Text('アプリを再起動してください。'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const Text('OK'),
+                      ),
+                    ],
+                  ),
+                );
+              }
             },
             icon: const Icon(Icons.logout),
           )
@@ -129,7 +131,7 @@ class MyHomePage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('モード: ${kReleaseMode ? 'リリース' : 'デバッグ'}'),
+                const Text('MODE: ${kReleaseMode ? 'RELEASE' : 'DEBUG'}'),
                 Text('UID: $uid'),
               ],
             ),
@@ -146,7 +148,7 @@ class MyHomePage extends StatelessWidget {
                     builder: (context, snapshot) {
                       final counter = snapshot.data;
                       return Text(
-                        '${counter ?? '-'}',
+                        '${counter ?? 'Click add button!'}',
                         style: Theme.of(context).textTheme.headlineMedium,
                       );
                     }),
@@ -161,6 +163,9 @@ class MyHomePage extends StatelessWidget {
             await _incrementCounter();
           } catch (e) {
             print(e);
+            if (!context.mounted) {
+              return;
+            }
             await showDialog<void>(
               context: context,
               builder: (context) => AlertDialog(
