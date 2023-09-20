@@ -30,20 +30,6 @@ format-dry-exit-if-changed:
 build-runner:
 	$(FLUTTER) packages pub run build_runner build --delete-conflicting-outputs
 
-### Web Relase Commands
-
-.PHONY: build-web
-build-web:
-	make get-dependencies
-	$(FLUTTER) build web \
-		--web-renderer html \
-		--release
-
-.PHONY: deploy-web
-deploy-web:
-	make build-web
-	firebase deploy --only hosting
-
 ### Android Relase Commands
 
 .PHONY: build-android

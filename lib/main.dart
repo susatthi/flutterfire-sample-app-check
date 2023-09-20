@@ -6,7 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutterfire_sample_app_check/firebase_options.dart';
 
 Future<void> main() async {
@@ -19,14 +18,8 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // 環境変数の読み込み
-  await dotenv.load(fileName: 'assets/.env');
-
   // App Check の初期化
   await FirebaseAppCheck.instance.activate(
-    // Webに適用する場合は、reCAPTCHAのサイトキーを指定する
-    webRecaptchaSiteKey:
-        kReleaseMode ? dotenv.get('WEB_RECAPCHA_SITE_KEY') : null,
     // Androidに適用する場合
     androidProvider:
         kReleaseMode ? AndroidProvider.playIntegrity : AndroidProvider.debug,

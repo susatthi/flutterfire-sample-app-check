@@ -48,6 +48,3 @@ app.*.map.json
 
 # Firebase cache
 .firebase/
-
-# dotenv
-assets/.env
