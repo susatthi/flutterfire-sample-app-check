@@ -1,18 +1,34 @@
 FVM := $(shell which fvm)
 FLUTTER := $(FVM) flutter
+DART := $(FVM) dart
 
 .PHONY: setup
 setup:
 	dart pub global activate fvm
 	fvm install
 
-.PHONY: get-dependencies
-get-dependencies:
+.PHONY: pub-get
+pub-get:
 	$(FLUTTER) pub get
+
+.PHONY: pub-upgrade
+pub-upgrade:
+	$(FLUTTER) pub upgrade
+
+.PHONY: pod-install
+pod-install:
+	cd ios && pod install && cd ..
 
 .PHONY: clean
 clean:
 	$(FLUTTER) clean
+	rm -rf ios/Pods ios/Podfile.lock
+
+.PHONY: clean-build
+clean-build:
+	make clean
+	make pub-get
+	make pod-install
 
 .PHONY: analyze
 analyze:
@@ -20,24 +36,31 @@ analyze:
 
 .PHONY: format
 format:
-	$(FLUTTER) format lib/
+	@find lib -name "*.dart" \
+		-not -name "*.g.dart" \
+		-not -name "*.freezed.dart" \
+		-not -name "*.gr.dart" \
+		-not -name "*.gen.dart" \
+		-not -path "*/generated/*" \
+		| xargs $(DART) format lib/
 
-.PHONY: format-dry-exit-if-changed
-format-dry-exit-if-changed:
-	$(FLUTTER) format --dry-run --set-exit-if-changed lib/
+.PHONY: build-runner-build
+build-runner-build:
+	$(DART) run build_runner build --delete-conflicting-outputs
 
-.PHONY: build-runner
-build-runner:
-	$(FLUTTER) packages pub run build_runner build --delete-conflicting-outputs
+.PHONY: build-runner-watch
+build-runner-watch:
+	$(DART) run build_runner clean
+	$(DART) run build_runner watch --delete-conflicting-outputs
 
-### Android Relase Commands
+### Android Release Commands
 
 .PHONY: build-android
 build-android:
 	$(FLUTTER) build appbundle \
 		--release
 
-### iOS Relase Commands
+### iOS Release Commands
 
 .PHONY: build-ios
 build-ios:
